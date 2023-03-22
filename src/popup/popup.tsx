@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
+import Tesseract from "tesseract.js";
 import { createRoot } from "react-dom/client";
 import "./popup.css";
 import { fetchOpenaiData } from "../utils/api";
+
 
 const App: React.FC<{}> = () => {
   const [apiKey, setApiKey] = useState("");
   const [question, setQuestion] = useState("");
 
-  useEffect(() => {
-    chrome.storage.local.get(["openaiApiKey"]).then(({ openaiApiKey }) => {
-      setApiKey(openaiApiKey || "");
-    });
-  });
+  // useEffect(() => {
+  //   chrome.storage.local.get(["openaiApiKey"]).then(({ openaiApiKey }) => {
+  //     setApiKey(openaiApiKey || "");
+  //   });
+  // });
 
   const handleChange = (e) => {
     setApiKey(e.target.value);
@@ -27,6 +29,27 @@ const App: React.FC<{}> = () => {
     fetchOpenaiData(question, apiKey);
     // setQuestion("");
   };
+
+const handleCapture = (e) => {
+  e.preventDefault();
+
+  // chrome.scripting.executeScript({
+  //   target: { tabId: tab.id },
+  //   files: ['tesseract.min.js']
+  // });
+
+   chrome.tabs.captureVisibleTab(null, {}, function () {
+     Tesseract.recognize(
+       "https://tesseract.projectnaptha.com/img/eng_bw.png",
+       "eng",
+       { logger: (m) => console.log(m) }
+     ).then(({ data: { text } }) => {
+       console.log(text);
+     });
+   });
+
+};
+
 
   return (
     <div>
@@ -49,6 +72,7 @@ const App: React.FC<{}> = () => {
         ></input>
         <button>Submit</button>
       </form>
+      <button onClick={handleCapture}>Capture</button>
     </div>
   );
 };
