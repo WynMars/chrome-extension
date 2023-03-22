@@ -5,32 +5,50 @@ import { fetchOpenaiData } from "../utils/api";
 
 const App: React.FC<{}> = () => {
   const [apiKey, setApiKey] = useState("");
+  const [question, setQuestion] = useState("");
 
   useEffect(() => {
-chrome.storage.local.get(["openaiApiKey"]).then(({ openaiApiKey }) => {
-  setApiKey(openaiApiKey || "");
-});
-
-  fetchOpenaiData("what is red");
-
+    chrome.storage.local.get(["openaiApiKey"]).then(({ openaiApiKey }) => {
+      setApiKey(openaiApiKey || "");
+    });
   });
 
   const handleChange = (e) => {
-    const openaiApiKey = e.target.value;
     setApiKey(e.target.value);
-    chrome.storage.local.set({ openaiApiKey });
+  };
+
+  const handleQuestionChange = (e) => {
+    setQuestion(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    chrome.storage.local.set({ openaiApiKey: apiKey });
+    fetchOpenaiData(question, apiKey);
+    // setQuestion("");
   };
 
   return (
     <div>
-      <label>Please Enter Your API Key</label>
-      <input
-        type="text"
-        id="apiKey"
-        name="apiKey"
-        value={apiKey}
-        onChange={handleChange}
-      ></input>
+      <form onSubmit={handleSubmit}>
+        <label>Please Enter Your API Key</label>
+        <input
+          type="text"
+          id="apiKey"
+          name="apiKey"
+          value={apiKey}
+          onChange={handleChange}
+        ></input>
+        <label>Your Question</label>
+        <input
+          type="text"
+          id="question"
+          name="question"
+          value={question}
+          onChange={handleQuestionChange}
+        ></input>
+        <button>Submit</button>
+      </form>
     </div>
   );
 };
