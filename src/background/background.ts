@@ -1,4 +1,4 @@
-// TODO: background script
-chrome.runtime.onInstalled.addListener(() => {
-  // TODO: on installed function
-})
+// // TODO: background script
+// chrome.runtime.onInstalled.addListener(() => {
+//   // TODO: on installed function
+// })
